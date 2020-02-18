@@ -69,3 +69,7 @@ TOD_Volume <- function(df = data,Date = "1/1/2000"){
   colnames(TOD) <- c("Location",0:23)
   return(TOD)
 }
+
+compliance <- function(){
+  Comp_Table <- as.data.frame(matrix(data=0,nrow=7,ncol = ))
+}
