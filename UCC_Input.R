@@ -11,14 +11,16 @@ library(reshape2)
 
 #Create dataframe for each UCC after user defined date
 Site <- function(file = data, date = "1/1/2000"){
-  file$Arrival <- anytime(file$Arrival)
   date <- anytime(date)
-  MS_Expresscare <<- file[file$Location == "Ms Express Care" & file$Arrival > date,]
-  Union_Square <<- file[file$Location == "UC10UNION [41028001]"& file$Arrival > date,]
-  Broadway <<- file[file$Location == "UCBROADWAY [8316001]"& file$Arrival > date,]
-  Cadman <<- file[file$Location == "UCCADMAN [8315001]" & file$Arrival > date,]
-  Columbus <<- file[file$Location == "UCCOLUMBUS [8314001]"& file$Arrival > date,]
-  York <<- file[file$Location == "UCYORK [8317001]"& file$Arrival > date,]
+  file$Arrival <- anytime(file$Arrival)
+  file <- file[file$Arrival > date | is.na(file$Arrival),]
+  
+  MS_Expresscare <<- file[file$Location == "Ms Express Care",]
+  Union_Square <<- file[file$Location == "UC10UNION [41028001]",]
+  Broadway <<- file[file$Location == "UCBROADWAY [8316001]",]
+  Cadman <<- file[file$Location == "UCCADMAN [8315001]",]
+  Columbus <<- file[file$Location == "UCCOLUMBUS [8314001]",]
+  York <<- file[file$Location == "UCYORK [8317001]",]
 }
 
 #Function for Day of week Volume by site
@@ -71,17 +73,60 @@ TOD_Volume <- function(df = data,Date = "1/1/2000"){
 }
 
 #Create Table for time stamp compliance
-compliance <- function(){
+compliance <- function(Date = "1/1/2000"){
   Comp_Table <- as.data.frame(matrix(data=0,nrow=7,ncol = 6))
-  Site(date = max(anytime(data$Arrival), na.rm = T)-604800)
+  Site(date = Date)
   Comp_Table[,1] <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York","Total")
   colnames(Comp_Table) <- c("Location","Total","Left","NA_Arrival","NA_Roomed","NA_Discharge")
   
+  #Count total encounters in the past week for each site (column 2)
   Comp_Table[1,2] <- nrow(MS_Expresscare[!is.na(MS_Expresscare$Location),])
   Comp_Table[2,2] <- nrow(Union_Square[!is.na(Union_Square$Location),])
   Comp_Table[3,2] <- nrow(Broadway[!is.na(Broadway$Location),])
   Comp_Table[4,2] <- nrow(Cadman[!is.na(Cadman$Location),])
   Comp_Table[5,2] <- nrow(Columbus[!is.na(Columbus$Location),])
   Comp_Table[6,2] <- nrow(York[!is.na(York$Location),])
-  Comp_Table[7,2] <- sum(Comp_Table[1:6,2])
+  
+  #Count of Total encounters where there is an NA value for patient Arrival (column 4)
+  Comp_Table[1,4] <- nrow(MS_Expresscare[is.na(MS_Expresscare$Arrival) & !is.na(MS_Expresscare$Location),])
+  Comp_Table[2,4] <- nrow(Union_Square[is.na(Union_Square$Arrival) & !is.na(Union_Square$Location),])
+  Comp_Table[3,4] <- nrow(Broadway[is.na(Broadway$Arrival) & !is.na(Broadway$Location),])
+  Comp_Table[4,4] <- nrow(Cadman[is.na(Cadman$Arrival) & !is.na(Cadman$Location),])
+  Comp_Table[5,4] <- nrow(Columbus[is.na(Columbus$Arrival) & !is.na(Columbus$Location),])
+  Comp_Table[6,4] <- nrow(York[is.na(York$Arrival) & !is.na(York$Location),])
+  
+  #Count of TOtal encounters where there is an NA value for patient Roomed (Column 5)
+  Comp_Table[1,5] <- nrow(MS_Expresscare[is.na(MS_Expresscare$Roomed) & !is.na(MS_Expresscare$Location),])
+  Comp_Table[2,5] <- nrow(Union_Square[is.na(Union_Square$Roomed) & !is.na(Union_Square$Location),])
+  Comp_Table[3,5] <- nrow(Broadway[is.na(Broadway$Roomed) & !is.na(Broadway$Location),])
+  Comp_Table[4,5] <- nrow(Cadman[is.na(Cadman$Roomed) & !is.na(Cadman$Location),])
+  Comp_Table[5,5] <- nrow(Columbus[is.na(Columbus$Roomed) & !is.na(Columbus$Location),])
+  Comp_Table[6,5] <- nrow(York[is.na(York$Roomed) & !is.na(York$Location),])
+  
+  #Count of TOtal encounters where there is an NA value for patient Discharge (Column 6)
+  Comp_Table[1,6] <- nrow(MS_Expresscare[is.na(MS_Expresscare$Discharge) & !is.na(MS_Expresscare$Location),])
+  Comp_Table[2,6] <- nrow(Union_Square[is.na(Union_Square$Discharge) & !is.na(Union_Square$Location),])
+  Comp_Table[3,6] <- nrow(Broadway[is.na(Broadway$Discharge) & !is.na(Broadway$Location),])
+  Comp_Table[4,6] <- nrow(Cadman[is.na(Cadman$Discharge) & !is.na(Cadman$Location),])
+  Comp_Table[5,6] <- nrow(Columbus[is.na(Columbus$Discharge) & !is.na(Columbus$Location),])
+  Comp_Table[6,6] <- nrow(York[is.na(York$Discharge) & !is.na(York$Location),])
+  
+  #Count of encounters where paitent left at some point. Entire visit was not completed
+  Left <- c("LWBS Before Triage [6]","LWBS After Triage [7]","Left Before Treatment Completed (Eloped) [5]	","Left","AMA [4]")
+  Left_df <- subset(data, Disposition %in% Left)
+  Site(file = Left_df, date = Date)
+  Comp_Table[1,3] <- nrow(MS_Expresscare[!is.na(MS_Expresscare$Location),])
+  Comp_Table[2,3] <- nrow(Union_Square[!is.na(Union_Square$Location),])
+  Comp_Table[3,3] <- nrow(Broadway[!is.na(Broadway$Location),])
+  Comp_Table[4,3] <- nrow(Cadman[!is.na(Cadman$Location),])
+  Comp_Table[5,3] <- nrow(Columbus[!is.na(Columbus$Location),])
+  Comp_Table[6,3] <- nrow(York[!is.na(York$Location),])
+  
+  #Sum each column for the totals column
+  for(i in 2:ncol(Comp_Table)){
+    Comp_Table[7,i] <- sum(Comp_Table[1:6,i])
+  }
+  
+  #Return Comp Table
+  return(Comp_Table)
 }
