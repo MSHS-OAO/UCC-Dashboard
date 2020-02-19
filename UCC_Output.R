@@ -85,6 +85,7 @@ bar_DOW_site <- function(loc){
 }
 #bar_DOW_site("MS Express Care")
 
+#Box plot by DOW comparing site with entire system
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))
