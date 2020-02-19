@@ -70,6 +70,18 @@ TOD_Volume <- function(df = data,Date = "1/1/2000"){
   return(TOD)
 }
 
+#Create Table for time stamp compliance
 compliance <- function(){
-  Comp_Table <- as.data.frame(matrix(data=0,nrow=7,ncol = ))
+  Comp_Table <- as.data.frame(matrix(data=0,nrow=7,ncol = 6))
+  Site(date = max(anytime(data$Arrival), na.rm = T)-604800)
+  Comp_Table[,1] <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York","Total")
+  colnames(Comp_Table) <- c("Location","Total","Left","NA_Arrival","NA_Roomed","NA_Discharge")
+  
+  Comp_Table[1,2] <- nrow(MS_Expresscare[!is.na(MS_Expresscare$Location),])
+  Comp_Table[2,2] <- nrow(Union_Square[!is.na(Union_Square$Location),])
+  Comp_Table[3,2] <- nrow(Broadway[!is.na(Broadway$Location),])
+  Comp_Table[4,2] <- nrow(Cadman[!is.na(Cadman$Location),])
+  Comp_Table[5,2] <- nrow(Columbus[!is.na(Columbus$Location),])
+  Comp_Table[6,2] <- nrow(York[!is.na(York$Location),])
+  Comp_Table[7,2] <- sum(Comp_Table[1:6,2])
 }
