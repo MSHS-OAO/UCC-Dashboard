@@ -7,11 +7,13 @@ output:
 ## Mount Sinai Health System
 
 ```{r,echo=F,warning=F,message=F}
+source(paste0(getwd(),"/UCC_Input.R"))
+
 library(anytime)
 library(lubridate)
 library(ggplot2)
 library(reshape2)
-source(paste0(getwd(),"/UCC_Input.R"))
+
 
 Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
 Days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
@@ -46,9 +48,9 @@ Compliance_30day <- compliance(Date=max(anytime(data$Arrival), na.rm = T)-295200
 ###-----Graphs
 ##System Graphs
 line_TOD <- function(TOD_table){
-  threemelt <- melt(data = TOD_table[c(1:6,7),], id.vars="Location")
-  threemelt$variable <- as.numeric(threemelt$variable)
-  three <- ggplot(data=threemelt, aes(x=variable,y=value,group=Location,color=Location))+
+  dfmelt <- melt(data = TOD_table[c(1:6,7),], id.vars="Location")
+  dfmelt$variable <- as.numeric(dfmelt$variable)
+  two <- ggplot(data=dfmelt, aes(x=variable,y=value,group=Location,color=Location))+
     geom_line(size=1.5)+
     geom_point(size=2.75, colour = "black")+
     scale_x_continuous(breaks=c(6:23), limits=c(6,23))+
@@ -57,7 +59,7 @@ line_TOD <- function(TOD_table){
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
-  return(three)
+  return(two)
 }
 bar_DOW <- function(DOW_table){
   one <- ggplot(data=melt(data = DOW_table[c(1:6,8),], id.var="Location"), aes(fill=Location, x=variable,y=value)) +
@@ -78,17 +80,17 @@ bar_DOW_site <- function(loc){
   df[c(2,4),2:8] <- df[c(2,4),2:8]/30
   df[3,2:8] <- df[3,2:8]/7
   dfmelt <-  melt(data=df, id.vars="Location")
-  df$Location <- factor(df$Location, levels=c("FYTD","30 Day", "7 Day", "System 30 Day Median"))
-  five <- ggplot(data = melt(data=df, id.vas="Location"),aes(fill=Location, x=variable,y=value))+
+  df$Location <- factor(df$Location, levels=c("FYTD","30 Day", "7 Day", "System Median"))
+  three <- ggplot(data = melt(data=df, id.vas="Location"),aes(fill=Location, x=variable,y=value))+
     geom_bar(position="dodge", stat="identity", colour = "Black") +
     ggtitle(paste0(loc," Volume by Day of Week"))+
-    labs(fill="Time Frame")+
     xlab("Day of Week")+
     ylab("Volume (Daily)")+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
-  return(five)
+  return(three)
 }
+
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))

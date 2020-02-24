@@ -55,12 +55,12 @@ TOD_Volume <- function(df = data,Date = "1/1/2000"){
   Site(file = df, date = Date)
   TOD <- as.data.frame(matrix(0,nrow=10,ncol = 24))
   for(i in 1:24){
-    TOD[1,i] <- nrow(MS_Expresscare[MS_Expresscare$`Hour of Day`==i-1 & !(is.na(MS_Expresscare$Location)),])
-    TOD[2,i] <- nrow(Union_Square[Union_Square$`Hour of Day`==i-1 & !(is.na(Union_Square$Location)),])
-    TOD[3,i] <- nrow(Broadway[Broadway$`Hour of Day`==i-1 & !(is.na(Broadway$Location)),])
-    TOD[4,i] <- nrow(Cadman[Cadman$`Hour of Day`==i-1 & !(is.na(Cadman$Location)),])
-    TOD[5,i] <- nrow(Columbus[Columbus$`Hour of Day`==i-1 & !(is.na(Columbus$Location)),])
-    TOD[6,i] <- nrow(York[York$`Hour of Day`==i-1 & !(is.na(York$Location)),])
+    TOD[1,i] <- nrow(MS_Expresscare[MS_Expresscare$`Hour of Day`==i-1 & !(is.na(MS_Expresscare$Location)) & !(is.na(MS_Expresscare$`Hour of Day`)),])
+    TOD[2,i] <- nrow(Union_Square[Union_Square$`Hour of Day`==i-1 & !(is.na(Union_Square$Location)) & !(is.na(Union_Square$`Hour of Day`)),])
+    TOD[3,i] <- nrow(Broadway[Broadway$`Hour of Day`==i-1 & !(is.na(Broadway$Location)) & !(is.na(Broadway$`Hour of Day`)),])
+    TOD[4,i] <- nrow(Cadman[Cadman$`Hour of Day`==i-1 & !(is.na(Cadman$Location)) & !(is.na(Cadman$`Hour of Day`)),])
+    TOD[5,i] <- nrow(Columbus[Columbus$`Hour of Day`==i-1 & !(is.na(Columbus$Location)) & !(is.na(Columbus$`Hour of Day`)),])
+    TOD[6,i] <- nrow(York[York$`Hour of Day`==i-1 & !(is.na(York$Location)) & !(is.na(York$`Hour of Day`)),])
     
     TOD[7,i] <- mean(TOD[1:6,i])
     TOD[8,i] <- median(TOD[1:6,i])
