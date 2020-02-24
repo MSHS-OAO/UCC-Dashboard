@@ -1,4 +1,4 @@
-source("J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/UCC Dashboard_Input.R")
+source(paste0(getwd(),"/UCC_Input.R"))
 library(tinytex)
 library(anytime)
 library(lubridate)
