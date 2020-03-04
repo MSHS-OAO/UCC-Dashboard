@@ -134,6 +134,36 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
           axis.title = element_text(face="bold"))
   return(four)
 }
+
+line_DOW_TOD_site <- function(loc, Date = "1/1/200"){
+  #filter master data by location and date
+  df1 <- data[data$Location == loc & data$Arrival > Date,]
+  #remove all NAs leading to false row count
+  df1 <- df1[!is.na(df1$Location) & !is.na(df1$`Day of Week`) & !is.na(df1$Arrival) & !is.na(df1$`Hour of Day`),]
+  #Create data frame counting number of encounters for each DOW at each Hour of day
+  TOD_DOW <- as.data.frame(matrix(0,nrow=7,ncol=25))
+  colnames(TOD_DOW) <- c("DOW",0:23)
+  TOD_DOW[,1] <- Days
+  for(i in 2:25){
+    for(j in 1:7){
+      TOD_DOW[j,i] <- nrow(df1[df1$`Hour of Day` == i-2 & df1$`Day of Week` == Days[j],])
+    }
+  }
+  TOD_melt <- melt(data = TOD_DOW, id.vars = "DOW")
+  TOD_melt$variable <- as.numeric(TOD_melt$variable)
+  TOD_melt$DOW <- factor(TOD_melt$DOW, levels = c(Days))
+  five <- ggplot(data=TOD_melt, aes(x=variable,y=value,group=DOW,color=DOW))+
+    geom_line(size=1.5)+
+    geom_point(size=2.75, colour = "black")+
+    scale_x_continuous(breaks=c(6:23), limits=c(6,23))+
+    ggtitle("Volume by Hour of day")+
+    xlab("Hour of Day")+
+    ylab("Volume")+
+    theme(plot.title=element_text(hjust=.5,size=20),
+          axis.title = element_text(face="bold"))
+  return(five)
+}
+
 ```
 
 ## System Graphs
@@ -150,8 +180,10 @@ line_TOD(TOD_30day)
 ## Site Graphs
 ### Site based volume by DOW
 ```{r,echo=F,warning=F,message=F}
-bar_DOW_site("MS Express Care")
-box_DOW_site("Ms Express Care")
+bar_DOW_site(loc = "MS Express Care")
+box_DOW_site(loc = "Ms Express Care")
+line_DOW_TOD_site(loc = "Ms Express Care")
+
 ```
 
 

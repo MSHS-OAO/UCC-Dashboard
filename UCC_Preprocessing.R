@@ -18,11 +18,6 @@ Master_UCC <- read.csv("J:/deans/Presidents/HSPI-PM/Operations Analytics and Opt
 Master_Express <- rbind(Master_Express,Express)
 Master_UCC <- rbind(Master_UCC,UCC)
 
-#Overwrite Master raw files
-write.csv(Master_Express, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Express.csv",row.names = F)
-write.csv(Master_UCC, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_UCC.csv", row.names = F )
-
-
 ##Take weekly raw files and perform calculations (add year for FYTD calcs)
 #--MS Expresscare----
 Express$Roomed <- as.character(Express$Roomed)
@@ -78,5 +73,10 @@ Master_Calc$Arrival <- anytime(Master_Calc$Arrival)
 Master_Calc$Roomed <- anytime(Master_Calc$Roomed)
 Master_Calc$Discharge <- anytime(Master_Calc$Discharge)
 Master_Calc <- rbind(Master_Calc,Calc)
+
 #Overwrite Master Calc file
 write.csv(Master_Calc,file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv",row.names=F)
+
+#Overwrite Master raw files
+write.csv(Master_Express, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Express.csv",row.names = F)
+write.csv(Master_UCC, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_UCC.csv", row.names = F )
