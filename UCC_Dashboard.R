@@ -90,6 +90,7 @@ bar_DOW_site <- function(loc){
           axis.title = element_text(face="bold"))
   return(three)
 }
+
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))
@@ -133,6 +134,7 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
           axis.title = element_text(face="bold"))
   return(four)
 }
+
 line_DOW_TOD_site <- function(loc, Date = "1/1/200"){
   #filter master data by location and date
   df1 <- data[data$Location == loc & data$Arrival > Date,]
@@ -161,6 +163,7 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/200"){
           axis.title = element_text(face="bold"))
   return(five)
 }
+
 ```
 
 ## System Graphs
@@ -180,6 +183,7 @@ line_TOD(TOD_30day)
 bar_DOW_site(loc = "MS Express Care")
 box_DOW_site(loc = "Ms Express Care")
 line_DOW_TOD_site(loc = "Ms Express Care")
+
 ```
 
 
