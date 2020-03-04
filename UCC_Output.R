@@ -131,9 +131,10 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
 }
 
 #Line graph by DOW showing volume by time of day
-line_DOW_TOD_site <- function(loc, Date = "1/1/200"){
+line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
+  data$Arrival <- anytime(data$Arrival)
   #filter master data by location and date
-  df1 <- data[data$Location == loc & data$Arrival > Date,]
+  df1 <- data[data$Location == loc & data$Arrival > anytime(Date),]
   #remove all NAs leading to false row count
   df1 <- df1[!is.na(df1$Location) & !is.na(df1$`Day of Week`) & !is.na(df1$Arrival) & !is.na(df1$`Hour of Day`),]
   #Create data frame counting number of encounters for each DOW at each Hour of day
