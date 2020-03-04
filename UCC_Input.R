@@ -103,7 +103,7 @@ compliance <- function(Date = "1/1/2000"){
   Comp_Table[5,5] <- nrow(Columbus[is.na(Columbus$Roomed) & !is.na(Columbus$Location),])
   Comp_Table[6,5] <- nrow(York[is.na(York$Roomed) & !is.na(York$Location),])
   
-  #Count of TOtal encounters where there is an NA value for patient Discharge (Column 6)
+  #Count of Total encounters where there is an NA value for patient Discharge (Column 6)
   Comp_Table[1,6] <- nrow(MS_Expresscare[is.na(MS_Expresscare$Discharge) & !is.na(MS_Expresscare$Location),])
   Comp_Table[2,6] <- nrow(Union_Square[is.na(Union_Square$Discharge) & !is.na(Union_Square$Location),])
   Comp_Table[3,6] <- nrow(Broadway[is.na(Broadway$Discharge) & !is.na(Broadway$Location),])
