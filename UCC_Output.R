@@ -130,10 +130,13 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
   return(four)
 }
 
+#Line graph by DOW showing volume by time of day
 line_DOW_TOD_site <- function(loc, Date = "1/1/200"){
+  #filter master data by location and date
   df1 <- data[data$Location == loc & data$Arrival > Date,]
+  #remove all NAs leading to false row count
   df1 <- df1[!is.na(df1$Location) & !is.na(df1$`Day of Week`) & !is.na(df1$Arrival) & !is.na(df1$`Hour of Day`),]
-  
+  #Create data frame counting number of encounters for each DOW at each Hour of day
   TOD_DOW <- as.data.frame(matrix(0,nrow=7,ncol=25))
   colnames(TOD_DOW) <- c("DOW",0:23)
   TOD_DOW[,1] <- Days
@@ -149,7 +152,7 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/200"){
     geom_line(size=1.5)+
     geom_point(size=2.75, colour = "black")+
     scale_x_continuous(breaks=c(6:23), limits=c(6,23))+
-    ggtitle("Hour of Day Volume by Day of Week")+
+    ggtitle("Volume by Hour of day")+
     xlab("Hour of Day")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
