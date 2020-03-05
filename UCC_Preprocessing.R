@@ -23,12 +23,8 @@ colnames(Master_Calc) <- c("Location","Arrival", "Roomed", "Discharge","Disposit
 
 #QC to make sure new UCC and Express files contain dates after the most recent master file dates
 if(Express_min < Master_Express_max || UCC_min < Master_UCC_max){
-  print("Error: Dates overlap. Check dates of Master and new files")
+  print("Error 1: Dates overlap. Check last date of Masters and first date of weekly files")
 } else {
-  #Append new raw files to masters
-  Master_Express <- rbind(Master_Express,Express)
-  Master_UCC <- rbind(Master_UCC,UCC)
-  
   ##Take weekly raw files and perform calculations (add year for FYTD calcs)
   #--MS Expresscare----
   Express$Roomed <- as.character(Express$Roomed)
@@ -79,12 +75,26 @@ if(Express_min < Master_Express_max || UCC_min < Master_UCC_max){
   Master_Calc$Arrival <- anytime(Master_Calc$Arrival)
   Master_Calc$Roomed <- anytime(Master_Calc$Roomed)
   Master_Calc$Discharge <- anytime(Master_Calc$Discharge)
-  Master_Calc <- rbind(Master_Calc,Calc)
+  
+  #If statement to only append master files if all files are ready to append
+  if(colnames(Master_Calc) == colnames(Calc) & colnames(Master_Express) == colnames(Express) & colnames(Master_UCC) == colnames(UCC)){
+    #Append weekly calc file to master calc file
+    Master_Calc2 <- rbind(Master_Calc,Calc)
+    #Append weekly raw files to master raw files
+    Master_Express2 <- rbind(Master_Express,Express)
+    Master_UCC2 <- rbind(Master_UCC,UCC)
+    if(nrow(Master_Calc)<nrow(Master_Calc2) & nrow(Master_Express)<nrow(Master_Express2) & nrow(Master_UCC)<nrow(Master_UCC2)){
+      #Overwrite Master Calc file
+      write.csv(Master_Calc,file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv",row.names=F)
+      
+      #Overwrite Master raw files
+      write.csv(Master_Express, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Express.csv",row.names = F)
+      write.csv(Master_UCC, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_UCC.csv", row.names = F )
+    } else {
+      print("Error 3: Master files could not be saved")
+    }
+  } else {
+    print("Error 2: Master files could not be appended")
+  }
 }
 
-#Overwrite Master Calc file
-write.csv(Master_Calc,file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv",row.names=F)
-
-#Overwrite Master raw files
-write.csv(Master_Express, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Express.csv",row.names = F)
-write.csv(Master_UCC, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_UCC.csv", row.names = F )
