@@ -85,11 +85,11 @@ if(Express_min < Master_Express_max || UCC_min < Master_UCC_max){
     Master_UCC2 <- rbind(Master_UCC,UCC)
     if(nrow(Master_Calc)<nrow(Master_Calc2) & nrow(Master_Express)<nrow(Master_Express2) & nrow(Master_UCC)<nrow(Master_UCC2)){
       #Overwrite Master Calc file
-      write.csv(Master_Calc,file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv",row.names=F)
+      write.csv(Master_Calc2,file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv",row.names=F)
       
       #Overwrite Master raw files
-      write.csv(Master_Express, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Express.csv",row.names = F)
-      write.csv(Master_UCC, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_UCC.csv", row.names = F )
+      write.csv(Master_Express2, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Express.csv",row.names = F)
+      write.csv(Master_UCC2, file="J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_UCC.csv", row.names = F )
     } else {
       print("Error 3: Master files could not be saved")
     }
