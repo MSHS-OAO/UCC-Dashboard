@@ -4,7 +4,7 @@ library(anytime)
 library(lubridate)
 library(ggplot2)
 library(reshape2)
-library(anytime)
+
 Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
 Days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 #Create DOW data frames for the entire repository
