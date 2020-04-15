@@ -172,6 +172,13 @@ bar_DOW(DOW_30day)
 line_TOD(TOD_30day)
 ```
 
+```{r, echo=F,warning=F}
+library(knitr)
+library(kableExtra)
+kable(Compliance_FYTD) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
 ### MS Express Care
 ```{r,echo=F,warning=F,message=F}
 bar_DOW_site(loc = "MS Express Care")
