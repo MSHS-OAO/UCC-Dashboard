@@ -56,7 +56,10 @@ line_TOD <- function(TOD_table){
     xlab("Hour of Day")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(two)
 }
 bar_DOW <- function(DOW_table){
@@ -66,7 +69,10 @@ bar_DOW <- function(DOW_table){
     xlab("Day of Week")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(one)
 }
 
@@ -85,7 +91,10 @@ bar_DOW_site <- function(loc){
     xlab("Day of Week")+
     ylab("Volume (Daily)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(three)
 }
 
@@ -129,7 +138,10 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
     xlab("Day of Week")+
     ylab("Volume (Encounters)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(four)
 }
 
@@ -159,9 +171,13 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
     xlab("Hour of Day")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(five)
 }
+
 Arrival_Roomed <- function(Date = "1/1/2000"){
   library(dplyr)
   df <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
@@ -178,7 +194,10 @@ Arrival_Roomed <- function(Date = "1/1/2000"){
     xlab("Day of Week")+
     ylab("Average Wait Time (min)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(six)
 }
 ```
