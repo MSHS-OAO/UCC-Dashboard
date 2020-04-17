@@ -3,8 +3,6 @@ output:
   html_document: default
   pdf_document: default
 ---
-# UCC System Comparison
-## Mount Sinai Health System
 
 ```{r,echo=F,warning=F,message=F}
 source(paste0(getwd(),"/UCC_Input.R"))
@@ -164,32 +162,62 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
           axis.title = element_text(face="bold"))
   return(five)
 }
-
 ```
 
-## System Graphs
-### UCC Volume by Day of Week
+# UCC System Comparison
+## Mount Sinai Health System {.tabset}
+
+### System Breakdown
 ```{r, echo=F,warning=F}
 bar_DOW(DOW_30day)
-```
-
-### UCC Volume by Time of Day
-```{r,echo=F,warning=F}
 line_TOD(TOD_30day)
 ```
 
-## Site Graphs
-### Site based volume by DOW
+```{r, echo=F,warning=F}
+library(knitr)
+library(kableExtra)
+kable(Compliance_FYTD) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+### MS Express Care
 ```{r,echo=F,warning=F,message=F}
 bar_DOW_site(loc = "MS Express Care")
 box_DOW_site(loc = "Ms Express Care")
 line_DOW_TOD_site(loc = "Ms Express Care")
-
 ```
 
+### UC Union Square
+```{r,echo=F,warning=F,message=F}
+bar_DOW_site(loc = "UC Union Square")
+box_DOW_site(loc = "UC10UNION [41028001]")
+line_DOW_TOD_site(loc = "UC10UNION [41028001]")
+```
 
+### UC Broadway
+```{r,echo=F,warning=F,message=F}
+bar_DOW_site(loc = "UC Broadway")
+box_DOW_site(loc = "UCBROADWAY [8316001]")
+line_DOW_TOD_site(loc = "UCBROADWAY [8316001]")
+```
 
+### UC Cadman
+```{r,echo=F,warning=F,message=F}
+bar_DOW_site(loc = "UC Cadman")
+box_DOW_site(loc = "UCCADMAN [8315001]")
+line_DOW_TOD_site(loc = "UCCADMAN [8315001]")
+```
 
+### UC Columbus
+```{r,echo=F,warning=F,message=F}
+bar_DOW_site(loc = "UC Columbus")
+box_DOW_site(loc = "UCCOLUMBUS [8314001]")
+line_DOW_TOD_site(loc = "UCCOLUMBUS [8314001]")
+```
 
-
-
+### UC York
+```{r,echo=F,warning=F,message=F}
+bar_DOW_site(loc = "UC York")
+box_DOW_site(loc = "UCYORK [8317001]")
+line_DOW_TOD_site(loc = "UCYORK [8317001]")
+```
