@@ -7,6 +7,7 @@ output:
 ```{r,echo=F,warning=F,message=F}
 source(paste0(getwd(),"/UCC_Input.R"))
 
+library(tidyverse)
 library(anytime)
 library(lubridate)
 library(ggplot2)
@@ -56,7 +57,7 @@ line_TOD <- function(TOD_table){
     xlab("Hour of Day")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"),
+          axis.title = element_text(size = 15,face="bold"),
           axis.text = element_text(size=13),
           legend.text = element_text(size = 12),
           legend.title = element_text(size=15))
@@ -69,11 +70,33 @@ bar_DOW <- function(DOW_table){
     xlab("Day of Week")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"),
+          axis.title = element_text(size = 15,face="bold"),
           axis.text = element_text(size=13),
           legend.text = element_text(size = 12),
           legend.title = element_text(size=15))
   return(one)
+}
+Arrival_Roomed <- function(Date = "1/1/2000"){
+  library(dplyr)
+  df <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
+  df <- df %>% filter(df$Arrival >= Date, df$`Arrival to Roomed` > 0) %>% group_by(Location, `Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n())
+  Average <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
+  Average <- Average %>%
+    filter(Average$Arrival >= Date, Average$`Arrival to Roomed` > 0) %>% group_by(`Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n()) %>%
+    mutate(Location = "Average") %>% select(Location, `Day of Week`,Average,Median,N)
+  df <- bind_rows(df,Average)
+  levels(df$`Day of Week`) <- Days
+  six <- ggplot(data = df, aes(fill = Location, x = `Day of Week`, y = Average)) +
+    geom_bar(position="dodge", stat="identity", colour = "Black") +
+    ggtitle("Patient Wait Time by Day of Week")+
+    xlab("Day of Week")+
+    ylab("Average Wait Time (min)")+
+    theme(plot.title=element_text(hjust=.5,size=20),
+          axis.title = element_text(size = 15,face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
+  return(six)
 }
 
 ##Site Graphs
@@ -91,13 +114,12 @@ bar_DOW_site <- function(loc){
     xlab("Day of Week")+
     ylab("Volume (Daily)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"),
+          axis.title = element_text(size =15,face="bold"),
           axis.text = element_text(size=13),
           legend.text = element_text(size = 12),
           legend.title = element_text(size=15))
   return(three)
 }
-
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))
@@ -138,13 +160,12 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
     xlab("Day of Week")+
     ylab("Volume (Encounters)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"),
+          axis.title = element_text(size=15,face="bold"),
           axis.text = element_text(size=13),
           legend.text = element_text(size = 12),
           legend.title = element_text(size=15))
   return(four)
 }
-
 line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   #filter master data by location and date
@@ -171,34 +192,11 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
     xlab("Hour of Day")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"),
+          axis.title = element_text(size = 15,face="bold"),
           axis.text = element_text(size=13),
           legend.text = element_text(size = 12),
           legend.title = element_text(size=15))
   return(five)
-}
-
-Arrival_Roomed <- function(Date = "1/1/2000"){
-  library(dplyr)
-  df <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
-  df <- df %>% filter(df$Arrival >= Date, df$`Arrival to Roomed` > 0) %>% group_by(Location, `Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n())
-  Average <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
-  Average <- Average %>%
-    filter(Average$Arrival >= Date, Average$`Arrival to Roomed` > 0) %>% group_by(`Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n()) %>%
-    mutate(Location = "Average") %>% select(Location, `Day of Week`,Average,Median,N)
-  df <- bind_rows(df,Average)
-  levels(df$`Day of Week`) <- Days
-  six <- ggplot(data = df, aes(fill = Location, x = `Day of Week`, y = Average)) +
-    geom_bar(position="dodge", stat="identity", colour = "Black") +
-    ggtitle("Patient Wait Time by Day of Week")+
-    xlab("Day of Week")+
-    ylab("Average Wait Time (min)")+
-    theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"),
-          axis.text = element_text(size=13),
-          legend.text = element_text(size = 12),
-          legend.title = element_text(size=15))
-  return(six)
 }
 ```
 
@@ -215,8 +213,12 @@ Arrival_Roomed()
 ```{r, echo=F,warning=F,message=F,fig.width=12}
 library(knitr)
 library(kableExtra)
+colnames(Compliance_FYTD) <- c("Location","Total","N","% of Tot.","NA","% of Tot.","NA","% of Tot.","NA","% of Tot.")
 kable(Compliance_FYTD) %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling(bootstrap_options = c("striped", "hover"), fixed_thead = T) %>%
+  row_spec(0, background = "navy", color = "white") %>%
+  row_spec(0:nrow(Compliance_FYTD), align = "c") %>%
+  add_header_above(c(" " = 1," "=1, "Left" = 2, "Arrival" = 2, "Roomed" = 2, "Discharged" = 2))
 ```
 
 ### MS Express Care

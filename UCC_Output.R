@@ -1,18 +1,21 @@
 source(paste0(getwd(),"/UCC_Input.R"))
-library(tinytex)
+
+library(tidyverse)
 library(anytime)
 library(lubridate)
-library(tidyverse)
+library(ggplot2)
 library(reshape2)
+
 
 Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
 Days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-#Create DOW data frames for the entire repository
+
+###-----Create DOW data frames for the entire repository
 DOW <- DOW_Volume()
 #The most recent week of data
 DOW_Weekly <- DOW_Volume(Date=max(anytime(data$Arrival), na.rm = T)-604800)
 #Fiscal year to date
-DOW_FYTD <- DOW_Volume(Date = lubridate::floor_date(Sys.Date(),"year"))
+DOW_FYTD <- DOW_Volume(Date = floor_date(Sys.Date(),"year"))
 #Past 30 days
 DOW_30day <- DOW_Volume(Date=max(anytime(data$Arrival), na.rm = T)-2952000)
 
@@ -21,33 +24,21 @@ TOD <- TOD_Volume()
 #The most recent week of data
 TOD_Weekly <- TOD_Volume(Date=max(anytime(data$Arrival), na.rm = T)-604800)
 #Fiscal year to date
-TOD_FYTD <- TOD_Volume(Date = lubridate::floor_date(Sys.Date(),"year"))
+TOD_FYTD <- TOD_Volume(Date = floor_date(Sys.Date(),"year"))
 #Past 30 days
 TOD_30day <- TOD_Volume(Date=max(anytime(data$Arrival), na.rm = T)-2952000)
 
-#Compliance table for FYTD
-Compliance_FYTD <- compliance(Date = floor_date(Sys.Date(),"year"))
+#Create compliance table for entire repository
+Compliance_tot <- compliance()
 #Compliance table for most recent week of data
 Compliance_Weekly <- compliance(Date = max(anytime(data$Arrival), na.rm = T)-604800)
+#Compliance table for FYTD
+Compliance_FYTD <- compliance(Date = floor_date(Sys.Date(),"year"))
+#Past 30 Days
+Compliance_30day <- compliance(Date=max(anytime(data$Arrival), na.rm = T)-2952000)
 
-
-#grouped bar graph for all DOW data
-bar_DOW <- function(DOW_table){
-  one <- ggplot(data=melt(data = DOW_table[c(1:6,8),], id.var="Location"), aes(fill=Location, x=variable,y=value)) +
-    geom_bar(position="dodge", stat="identity", colour = "Black") +
-    ggtitle("Volume by Day of Week")+
-    xlab("Day of Week")+
-    ylab("Volume")+
-    theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
-  return(one)
-}
-#bar_DOW(DOW_30day)
-#bar_DOW(DOW_FYTD)
-#bar_DOW(DOW)
-#bar_DOW(DOW_Weekly)
-
-#line graph for all TOD data
+###-----Graphs
+##System Graphs
 line_TOD <- function(TOD_table){
   dfmelt <- melt(data = TOD_table[c(1:6,7),], id.vars="Location")
   dfmelt$variable <- as.numeric(dfmelt$variable)
@@ -59,13 +50,25 @@ line_TOD <- function(TOD_table){
     xlab("Hour of Day")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(two)
 }
-#line_TOD(TOD_30day)
-#line_TOD(TOD_Weekly)
-
-#Bar graph by DOW for average patient wait time after given date
+bar_DOW <- function(DOW_table){
+  one <- ggplot(data=melt(data = DOW_table[c(1:6,8),], id.var="Location"), aes(fill=Location, x=variable,y=value)) +
+    geom_bar(position="dodge", stat="identity", colour = "Black") +
+    ggtitle("Volume by Day of Week")+
+    xlab("Day of Week")+
+    ylab("Volume")+
+    theme(plot.title=element_text(hjust=.5,size=20),
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
+  return(one)
+}
 Arrival_Roomed <- function(Date = "1/1/2000"){
   library(dplyr)
   df <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
@@ -82,12 +85,14 @@ Arrival_Roomed <- function(Date = "1/1/2000"){
     xlab("Day of Week")+
     ylab("Average Wait Time (min)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(six)
 }
-#Arrival_Roomed()
 
-#Bar graph by DOW for FYTD, 30 day, weekly and 30 day system
+##Site Graphs
 bar_DOW_site <- function(loc){
   df <- rbind(DOW_FYTD[DOW_FYTD$Location == loc,],DOW_30day[DOW_30day$Location == loc,],DOW_Weekly[DOW_Weekly$Location == loc,],DOW_30day[DOW_30day$Location == "Median",])
   df[,1] <- c("FYTD", "30 Day","7 Day", "System Median")
@@ -102,12 +107,12 @@ bar_DOW_site <- function(loc){
     xlab("Day of Week")+
     ylab("Volume (Daily)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(three)
 }
-#bar_DOW_site("MS Express Care")
-
-#Box plot by DOW comparing site with entire system
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))
@@ -148,11 +153,12 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
     xlab("Day of Week")+
     ylab("Volume (Encounters)")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(four)
 }
-
-#Line graph by DOW showing volume by time of day
 line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   #filter master data by location and date
@@ -179,6 +185,9 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
     xlab("Hour of Day")+
     ylab("Volume")+
     theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
+          axis.title = element_text(face="bold"),
+          axis.text = element_text(size=13),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size=15))
   return(five)
 }
