@@ -88,6 +88,7 @@ bar_DOW_site <- function(loc){
           axis.title = element_text(face="bold"))
   return(three)
 }
+
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))
@@ -131,6 +132,7 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
           axis.title = element_text(face="bold"))
   return(four)
 }
+
 line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   #filter master data by location and date
@@ -164,7 +166,6 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
 
 # UCC System Comparison
 ## Mount Sinai Health System {.tabset}
-
 
 ### System Breakdown
 ```{r, echo=F,warning=F}
