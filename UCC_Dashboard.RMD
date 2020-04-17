@@ -162,18 +162,38 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
           axis.title = element_text(face="bold"))
   return(five)
 }
+Arrival_Roomed <- function(Date = "1/1/2000"){
+  library(dplyr)
+  df <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
+  df <- df %>% filter(df$Arrival >= Date, df$`Arrival to Roomed` > 0) %>% group_by(Location, `Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n())
+  Average <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
+  Average <- Average %>%
+    filter(Average$Arrival >= Date, Average$`Arrival to Roomed` > 0) %>% group_by(`Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n()) %>%
+    mutate(Location = "Average") %>% select(Location, `Day of Week`,Average,Median,N)
+  df <- bind_rows(df,Average)
+  levels(df$`Day of Week`) <- Days
+  six <- ggplot(data = df, aes(fill = Location, x = `Day of Week`, y = Average)) +
+    geom_bar(position="dodge", stat="identity", colour = "Black") +
+    ggtitle("Patient Wait Time by Day of Week")+
+    xlab("Day of Week")+
+    ylab("Average Wait Time (min)")+
+    theme(plot.title=element_text(hjust=.5,size=20),
+          axis.title = element_text(face="bold"))
+  return(six)
+}
 ```
 
 # UCC System Comparison
 ## Mount Sinai Health System {.tabset}
 
 ### System Breakdown
-```{r, echo=F,warning=F}
+```{r, echo=F,warning=F,message=F,fig.width=12}
 bar_DOW(DOW_30day)
 line_TOD(TOD_30day)
+Arrival_Roomed()
 ```
 
-```{r, echo=F,warning=F}
+```{r, echo=F,warning=F,message=F,fig.width=12}
 library(knitr)
 library(kableExtra)
 kable(Compliance_FYTD) %>%
@@ -181,42 +201,42 @@ kable(Compliance_FYTD) %>%
 ```
 
 ### MS Express Care
-```{r,echo=F,warning=F,message=F}
+```{r,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "MS Express Care")
 box_DOW_site(loc = "Ms Express Care")
 line_DOW_TOD_site(loc = "Ms Express Care")
 ```
 
 ### UC Union Square
-```{r,echo=F,warning=F,message=F}
+```{r,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC Union Square")
 box_DOW_site(loc = "UC10UNION [41028001]")
 line_DOW_TOD_site(loc = "UC10UNION [41028001]")
 ```
 
 ### UC Broadway
-```{r,echo=F,warning=F,message=F}
+```{r,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC Broadway")
 box_DOW_site(loc = "UCBROADWAY [8316001]")
 line_DOW_TOD_site(loc = "UCBROADWAY [8316001]")
 ```
 
 ### UC Cadman
-```{r,echo=F,warning=F,message=F}
+```{r,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC Cadman")
 box_DOW_site(loc = "UCCADMAN [8315001]")
 line_DOW_TOD_site(loc = "UCCADMAN [8315001]")
 ```
 
 ### UC Columbus
-```{r,echo=F,warning=F,message=F}
+```{r,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC Columbus")
 box_DOW_site(loc = "UCCOLUMBUS [8314001]")
 line_DOW_TOD_site(loc = "UCCOLUMBUS [8314001]")
 ```
 
 ### UC York
-```{r,echo=F,warning=F,message=F}
+```{r,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC York")
 box_DOW_site(loc = "UCYORK [8317001]")
 line_DOW_TOD_site(loc = "UCYORK [8317001]")
