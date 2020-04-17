@@ -2,9 +2,9 @@ source(paste0(getwd(),"/UCC_Input.R"))
 library(tinytex)
 library(anytime)
 library(lubridate)
-library(ggplot2)
+library(tidyverse)
 library(reshape2)
-library(anytime)
+
 Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
 Days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 #Create DOW data frames for the entire repository
@@ -64,6 +64,28 @@ line_TOD <- function(TOD_table){
 }
 #line_TOD(TOD_30day)
 #line_TOD(TOD_Weekly)
+
+#Bar graph by DOW for average patient wait time after given date
+Arrival_Roomed <- function(Date = "1/1/2000"){
+  library(dplyr)
+  df <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
+  df <- df %>% filter(df$Arrival >= Date, df$`Arrival to Roomed` > 0) %>% group_by(Location, `Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n())
+  Average <- data %>% mutate(Arrival = as.Date(data$Arrival)) 
+  Average <- Average %>%
+    filter(Average$Arrival >= Date, Average$`Arrival to Roomed` > 0) %>% group_by(`Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n()) %>%
+    mutate(Location = "Average") %>% select(Location, `Day of Week`,Average,Median,N)
+  df <- bind_rows(df,Average)
+  levels(df$`Day of Week`) <- Days
+  six <- ggplot(data = df, aes(fill = Location, x = `Day of Week`, y = Average)) +
+    geom_bar(position="dodge", stat="identity", colour = "Black") +
+    ggtitle("Patient Wait Time by Day of Week")+
+    xlab("Day of Week")+
+    ylab("Average Wait Time (min)")+
+    theme(plot.title=element_text(hjust=.5,size=20),
+          axis.title = element_text(face="bold"))
+  return(six)
+}
+#Arrival_Roomed()
 
 #Bar graph by DOW for FYTD, 30 day, weekly and 30 day system
 bar_DOW_site <- function(loc){
