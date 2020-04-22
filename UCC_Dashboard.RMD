@@ -17,7 +17,7 @@ library(lubridate)
 library(ggplot2)
 library(reshape2)
 
-
+sinai_colors <- c("#221F72", "#00AEEF", "#D80B8C", "#B2B3B2", "#C7C6EF","#DDDEDD","#FCC9E9","#C00000","#009242")
 Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
 Days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 
