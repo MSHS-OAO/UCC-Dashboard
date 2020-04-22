@@ -1,7 +1,11 @@
 ---
+author: Health System Operations
+title: MSHS UCC Dashboard
+date: '`r Sys.time()`'
 output:
-  html_document: default
-  pdf_document: default
+  html_document: 
+    css: "C:/Users/gregl/OneDrive/Documents/UCC-Dashboard/UCC_Style.css"
+    highlight: tango
 ---
 
 ```{r,echo=F,warning=F,message=F}
@@ -17,7 +21,7 @@ library(reshape2)
 Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
 Days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 
-###-----Create DOW data frames for the entire repository
+###Create DOW data frames for the entire repository
 DOW <- DOW_Volume()
 #The most recent week of data
 DOW_Weekly <- DOW_Volume(Date=max(anytime(data$Arrival), na.rm = T)-604800)
@@ -26,7 +30,7 @@ DOW_FYTD <- DOW_Volume(Date = floor_date(Sys.Date(),"year"))
 #Past 30 days
 DOW_30day <- DOW_Volume(Date=max(anytime(data$Arrival), na.rm = T)-2952000)
 
-#Create TOD data frames for the entire repository
+###Create TOD data frames for the entire repository
 TOD <- TOD_Volume()
 #The most recent week of data
 TOD_Weekly <- TOD_Volume(Date=max(anytime(data$Arrival), na.rm = T)-604800)
@@ -35,7 +39,7 @@ TOD_FYTD <- TOD_Volume(Date = floor_date(Sys.Date(),"year"))
 #Past 30 days
 TOD_30day <- TOD_Volume(Date=max(anytime(data$Arrival), na.rm = T)-2952000)
 
-#Create compliance table for entire repository
+###Create compliance table for entire repository
 Compliance_tot <- compliance()
 #Compliance table for most recent week of data
 Compliance_Weekly <- compliance(Date = max(anytime(data$Arrival), na.rm = T)-604800)
@@ -200,7 +204,6 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
 }
 ```
 
-# UCC System Comparison
 ## Mount Sinai Health System {.tabset}
 
 ### System Breakdown
