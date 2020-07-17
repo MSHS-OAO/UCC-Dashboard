@@ -68,7 +68,7 @@ line_TOD <- function(TOD_table){
 #line_TOD(TOD_30day)
 #line_TOD(TOD_Weekly)
 
-#Bar graph by DOW for FYTD, 30 day, weekly and 30 day system
+#Bar graph by DOW for FYTD, 30 day, weekly and 30 Day system
 bar_DOW_site <- function(loc){
   df <- rbind(DOW_FYTD[DOW_FYTD$Location == loc,],DOW_30day[DOW_30day$Location == loc,],DOW_Weekly[DOW_Weekly$Location == loc,],DOW_30day[DOW_30day$Location == "Median",])
   df[,1] <- c("FYTD", "30 Day","7 Day", "System Median (30 Day)")
