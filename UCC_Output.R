@@ -5,6 +5,7 @@ library(lubridate)
 library(ggplot2)
 library(reshape2)
 library(anytime)
+library(dplyr)
 Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
 Days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 #Create DOW data frames for the entire repository
@@ -38,6 +39,7 @@ bar_DOW <- function(DOW_table){
     ggtitle("Volume by Day of Week")+
     xlab("Day of Week")+
     ylab("Volume")+
+    scale_fill_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
   return(one)
@@ -58,6 +60,7 @@ line_TOD <- function(TOD_table){
     ggtitle("Volume by Hour of Day")+
     xlab("Hour of Day")+
     ylab("Volume")+
+    scale_color_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
   return(two)
@@ -68,17 +71,18 @@ line_TOD <- function(TOD_table){
 #Bar graph by DOW for FYTD, 30 day, weekly and 30 day system
 bar_DOW_site <- function(loc){
   df <- rbind(DOW_FYTD[DOW_FYTD$Location == loc,],DOW_30day[DOW_30day$Location == loc,],DOW_Weekly[DOW_Weekly$Location == loc,],DOW_30day[DOW_30day$Location == "Median",])
-  df[,1] <- c("FYTD", "30 Day","7 Day", "System Median")
-  df[1,2:8] <- df[1,2:8]/as.numeric(strftime(max(as.POSIXct(data$Arrival[!(is.na(data$Arrival))])), format = "%j"))
-  df[c(2,4),2:8] <- df[c(2,4),2:8]/30
+  df[,1] <- c("FYTD", "30 Day","7 Day", "System Median (30 Day)")
+  df[1,2:8] <- df[1,2:8]/(as.numeric(strftime(max(as.POSIXct(data$Arrival[!(is.na(data$Arrival))])), format = "%j"))/7)
+  df[c(2,4),2:8] <- df[c(2,4),2:8]/(30/7)
   df[3,2:8] <- df[3,2:8]/7
   dfmelt <-  melt(data=df, id.vars="Location")
-  df$Location <- factor(df$Location, levels=c("FYTD","30 Day", "7 Day", "System Median"))
+  df$Location <- factor(df$Location, levels=c("FYTD","30 Day", "7 Day", "System Median (30 Day)"))
   three <- ggplot(data = melt(data=df, id.vas="Location"),aes(fill=Location, x=variable,y=value))+
     geom_bar(position="dodge", stat="identity", colour = "Black") +
     ggtitle(paste0(loc," Volume by Day of Week"))+
     xlab("Day of Week")+
     ylab("Volume (Daily)")+
+    scale_fill_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
   return(three)
@@ -125,6 +129,7 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
     ggtitle(paste0(loc," Encounters by Day of Week"))+
     xlab("Day of Week")+
     ylab("Volume (Encounters)")+
+    scale_fill_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
   return(four)
@@ -156,6 +161,7 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
     ggtitle("Volume by Hour of day")+
     xlab("Hour of Day")+
     ylab("Volume")+
+    scale_color_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
   return(five)
