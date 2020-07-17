@@ -90,7 +90,6 @@ bar_DOW_site <- function(loc){
           axis.title = element_text(face="bold"))
   return(three)
 }
-
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))
@@ -134,7 +133,6 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
           axis.title = element_text(face="bold"))
   return(four)
 }
-
 line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   #filter master data by location and date
@@ -164,7 +162,6 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
           axis.title = element_text(face="bold"))
   return(five)
 }
-
 ```
 
 ## System Graphs
@@ -176,6 +173,13 @@ bar_DOW(DOW_30day)
 ### UCC Volume by Time of Day
 ```{r,echo=F,warning=F}
 line_TOD(TOD_30day)
+```
+
+```{r, echo=F, warning=F,results='asis'}
+library(knitr)
+library(kableExtra)
+kable(Compliance_FYTD) %>%
+    kable_styling(bootstrap_options = "striped", "hover")
 ```
 
 ## Site Graphs
