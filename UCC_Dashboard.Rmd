@@ -90,6 +90,7 @@ bar_DOW_site <- function(loc){
           axis.title = element_text(face="bold"))
   return(three)
 }
+
 box_DOW_site <- function(loc, Date = "1/1/2000"){
   data$Arrival <- anytime(data$Arrival)
   data <- cbind(data,as.Date(data$Arrival,format = "%m/%d/%Y"))
