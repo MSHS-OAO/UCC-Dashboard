@@ -130,3 +130,56 @@ compliance <- function(Date = "1/1/2000"){
   #Return Comp Table
   return(Comp_Table)
 }
+
+
+# Mount Sinai corporate colors "USE THIS TO ADD COLORS"
+MountSinai_colors <- c(
+  `light pink`   = "#fcc9e9",
+  `med pink`     = "#fa93d4",
+  `dark pink`    = "#d80b8c",
+  `light purple` = "#c7c6ef",
+  `med purple`   = "#8f8ce0",
+  `light blue`   = "#5cd3ff",
+  `med blue`     = "#06ABEB",
+  `dark blue`    = "#212070",
+  `light grey`   = "#b2b3b2",
+  `dark grey`    = "#686868",
+  `yellow`       = "#E69F00"
+)
+
+# Function to extract Mount Sinai colors as hex codes
+# Use Character names of MountSinai_colors
+
+MountSinai_cols <- function(...) {
+  cols <- c(...)
+  
+  if (is.null(cols))
+    return (MountSinai_colors)
+  
+  MountSinai_colors[cols]
+}
+
+# Create palettes 
+MountSinai_palettes <- list(
+  `all`   = MountSinai_cols("med blue","dark pink","dark blue","light grey", "light blue",
+                            "light pink", "light purple","med pink","med purple","yellow" ),
+  
+  `main`  = MountSinai_cols("med blue","dark pink","dark blue","dark grey","light pink","light blue","light grey"),
+  
+  `pink`  = MountSinai_cols("light pink", "dark pink"),
+  
+  `blue`  = MountSinai_cols("light blue", "dark blue"),
+  
+  `grey`  = MountSinai_cols("light grey", "med blue")
+  
+)
+MountSinai_palettes
+
+MountSinai_pal <- function(palette = "main", reverse = FALSE, ...) {
+  pal <- MountSinai_palettes[[palette]]
+  
+  if (reverse) pal <- rev(pal)
+  
+  colorRampPalette(pal, ...)
+}
+
