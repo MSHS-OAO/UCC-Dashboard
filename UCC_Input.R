@@ -74,10 +74,9 @@ TOD_Volume <- function(df = data,Date = "1/1/2000"){
 
 #Create Table for time stamp compliance
 compliance <- function(Date = "1/1/2000"){
-  Comp_Table <- as.data.frame(matrix(data=0,nrow=7,ncol = 6))
+  Comp_Table <- as.data.frame(matrix(data=0,nrow=7,ncol = 10))
   Site(date = Date)
   Comp_Table[,1] <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York","Total")
-  colnames(Comp_Table) <- c("Location","Total","Left","NA_Arrival","NA_Roomed","NA_Discharge")
   
   #Count total encounters in the past week for each site (column 2)
   Comp_Table[1,2] <- nrow(MS_Expresscare[!is.na(MS_Expresscare$Location),])
@@ -126,6 +125,15 @@ compliance <- function(Date = "1/1/2000"){
   for(i in 2:ncol(Comp_Table)){
     Comp_Table[7,i] <- sum(Comp_Table[1:6,i])
   }
+  
+  for(j in 3:6){
+    for(i in 1:nrow(Comp_Table)){
+      Comp_Table[i,j+4] <- paste0(round(Comp_Table[i,j]/Comp_Table[i,2]*100,2),"%")          
+    }
+  }
+  
+  Comp_Table <- Comp_Table[,c(1,2,3,7,4,8,5,9,6,10)]
+  colnames(Comp_Table) <- c("Location","Total","Left","Left %","NA_Arrival","Arrival %","NA_Roomed","Roomed %","NA_Discharge","Discharge %")
   
   #Return Comp Table
   return(Comp_Table)
