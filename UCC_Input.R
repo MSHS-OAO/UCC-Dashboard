@@ -1,4 +1,4 @@
-#---UCC Input Functions-------
+#---UCC Dashboard Preprocess-------
 
 #read in Master_Calc file
 data <- read.csv("J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv",
@@ -73,7 +73,6 @@ TOD_Volume <- function(df = data,Date = "1/1/2000"){
 }
 
 #Create Table for time stamp compliance
-#Create Table for time stamp compliance
 compliance <- function(Date = "1/1/2000"){
   Comp_Table <- as.data.frame(matrix(data=0,nrow=7,ncol = 10))
   Site(date = Date)
@@ -140,45 +139,54 @@ compliance <- function(Date = "1/1/2000"){
   return(Comp_Table)
 }
 
-#Colors
-sinai_colors <- c(`Navy Blue` = "#221F72",`Light Blue` = "#00AEEF",`Hot Pink` = "#D80B8C",`Medium Grey` = "#B2B3B2",`Light Purple` = "#C7C6EF",`Light Grey` = "#DDDEDD",`Light Pink` = "#FCC9E9",`Dark Red` = "#C00000",`Green` = "#009242")
-sinai_cols <- function(...) {
-  cols <- c(...)
-    
-  if (is.null(cols))
-    return (sinai_colors)
-    
-  sinai_colors[cols]
-}
-sinai_palettes <- list(
-  `main`  = sinai_cols("Navy Blue", "Light Blue", "Hot Pink", "Medium Grey", "Light Purple", "Light Grey", "Light Pink"),
-  
-  `cool`  = sinai_cols("Navy Blue", "Light Blue", "Light Purple")
+
+# Mount Sinai corporate colors "USE THIS TO ADD COLORS"
+MountSinai_colors <- c(
+  `light pink`   = "#fcc9e9",
+  `med pink`     = "#fa93d4",
+  `dark pink`    = "#d80b8c",
+  `light purple` = "#c7c6ef",
+  `med purple`   = "#8f8ce0",
+  `light blue`   = "#5cd3ff",
+  `med blue`     = "#06ABEB",
+  `dark blue`    = "#212070",
+  `light grey`   = "#b2b3b2",
+  `dark grey`    = "#686868",
+  `yellow`       = "#E69F00"
 )
-sinai_pal <- function(palette = "main", reverse = FALSE, ...) {
-  pal <- sinai_palettes[[palette]]
+
+# Function to extract Mount Sinai colors as hex codes
+# Use Character names of MountSinai_colors
+
+MountSinai_cols <- function(...) {
+  cols <- c(...)
+  
+  if (is.null(cols))
+    return (MountSinai_colors)
+  
+  MountSinai_colors[cols]
+}
+
+# Create palettes 
+MountSinai_palettes <- list(
+  `all`   = MountSinai_cols("med blue","dark pink","dark blue","light grey", "light blue",
+                            "light pink", "light purple","med pink","med purple","yellow" ),
+  
+  `main`  = MountSinai_cols("med blue","dark pink","dark blue","dark grey","light pink","light blue","light grey"),
+  
+  `pink`  = MountSinai_cols("light pink", "dark pink"),
+  
+  `blue`  = MountSinai_cols("light blue", "dark blue"),
+  
+  `grey`  = MountSinai_cols("light grey", "med blue")
+  
+)
+MountSinai_palettes
+
+MountSinai_pal <- function(palette = "main", reverse = FALSE, ...) {
+  pal <- MountSinai_palettes[[palette]]
   
   if (reverse) pal <- rev(pal)
   
   colorRampPalette(pal, ...)
-}
-
-scale_color_sinai <- function(palette = "main", discrete = TRUE, reverse = FALSE, ...) {
-  pal <- sinai_pal(palette = palette, reverse = reverse)
-  
-  if (discrete) {
-    discrete_scale("colour", paste0("sinai_", palette), palette = pal, ...)
-  } else {
-    scale_color_gradientn(colours = pal(256), ...)
-  }
-}
-
-scale_fill_sinai <- function(palette = "main", discrete = TRUE, reverse = FALSE, ...) {
-  pal <- sinai_pal(palette = palette, reverse = reverse)
-  
-  if (discrete) {
-    discrete_scale("fill", paste0("sinai_", palette), palette = pal, ...)
-  } else {
-    scale_fill_gradientn(colours = pal(256), ...)
-  }
 }
