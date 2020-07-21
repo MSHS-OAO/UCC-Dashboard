@@ -262,9 +262,3 @@ bar_DOW_site(loc = "UC York")
 box_DOW_site(loc = "UCYORK [8317001]")
 line_DOW_TOD_site(loc = "UCYORK [8317001]")
 ```
-
-
-
-
-
-
