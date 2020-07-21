@@ -190,4 +190,3 @@ MountSinai_pal <- function(palette = "main", reverse = FALSE, ...) {
   
   colorRampPalette(pal, ...)
 }
-
