@@ -6,22 +6,28 @@ output:
   html_document: default
 ---
 
-```{r,echo=F,warning=F,message=F}
-source(paste0(getwd(),"/UCC_Output.R"))
+```{r UCC_Output Source,echo=F,warning=F,message=F}
+source("~/UCC-Dashboard/UCC_Output.R")
 ```
 
 ## Mount Sinai Health System {.tabset}
 
 ### System Breakdown
-```{r, echo=F,warning=F,message=F,fig.width=12}
-bar_DOW(DOW_30day)
-line_TOD(TOD_30day)
+```{r System_Breakdown_Volumes, echo=F,warning=F,message=F,fig.width=12}
+#Confirmed
+bar_DOW(DOW_table=DOW_30day)
+bar_DOW_k(DOW_table=DOW_30day)
+#Confirmed
+line_TOD(TOD_table=TOD_30day)
+line_TOD_k(TOD_table=TOD_30day)
+```
+
+```{r Syste_Breakdown_Durations,echo=F,warning=F,message=F,fig.width=12}
+#Needs check
 Arrival_Roomed(Date=max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-30)
 ```
 
-```{r, echo=F,warning=F,message=F,fig.width=12}
-library(knitr)
-library(kableExtra)
+```{r Compliance_Table, echo=F,warning=F,message=F,fig.width=12}
 colnames(Compliance_FYTD) <- c("Location","Total","Na","% of Tot.","NA","% of Tot.","NA","% of Tot.","NA","% of Tot.")
 kable(Compliance_FYTD) %>%
   kable_styling(bootstrap_options = c("striped", "hover"), fixed_thead = T) %>%
@@ -31,43 +37,47 @@ kable(Compliance_FYTD) %>%
 ```
 
 ### MS Express Care
-```{r,echo=F,warning=F,message=F,fig.width=12}
+```{r MS_Express_Care_Volume,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "MS Express Care")
-box_DOW_site(loc = "Ms Express Care")
+box_DOW_site(loc = "Ms Express Care",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 line_DOW_TOD_site(loc = "Ms Express Care")
 ```
 
 ### UC Union Square
-```{r,echo=F,warning=F,message=F,fig.width=12}
+```{r UC_Union_Square_Volume,echo=F,warning=F,message=F,fig.width=12}
+#complete
 bar_DOW_site(loc = "UC Union Square")
-box_DOW_site(loc = "UC10UNION [41028001]",Date = floor_date(Sys.Date(),"year"))
-line_DOW_TOD_site(loc = "UC10UNION [41028001]")
+bar_DOW_site_k(loc = "UC Union Square")
+#complete
+box_DOW_site(loc = "UC10UNION [41028001]",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
+#complete
+line_DOW_TOD_site(loc = "UC10UNION [41028001]",Date=floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 ```
 
 ### UC Broadway
-```{r,echo=F,warning=F,message=F,fig.width=12}
+```{r UC_Broadway_Volume,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC Broadway")
-box_DOW_site(loc = "UCBROADWAY [8316001]")
+box_DOW_site(loc = "UCBROADWAY [8316001]",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 line_DOW_TOD_site(loc = "UCBROADWAY [8316001]")
 ```
 
 ### UC Cadman
-```{r,echo=F,warning=F,message=F,fig.width=12}
+```{r UC_Cadman_Volume,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC Cadman")
-box_DOW_site(loc = "UCCADMAN [8315001]")
+box_DOW_site(loc = "UCCADMAN [8315001]",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 line_DOW_TOD_site(loc = "UCCADMAN [8315001]")
 ```
 
 ### UC Columbus
-```{r,echo=F,warning=F,message=F,fig.width=12}
+```{r UC_Columbus_Volume,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC Columbus")
-box_DOW_site(loc = "UCCOLUMBUS [8314001]")
+box_DOW_site(loc = "UCCOLUMBUS [8314001]",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 line_DOW_TOD_site(loc = "UCCOLUMBUS [8314001]")
 ```
 
 ### UC York
-```{r,echo=F,warning=F,message=F,fig.width=12}
+```{r UC_York_Volume,echo=F,warning=F,message=F,fig.width=12}
 bar_DOW_site(loc = "UC York")
-box_DOW_site(loc = "UCYORK [8317001]")
+box_DOW_site(loc = "UCYORK [8317001]",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 line_DOW_TOD_site(loc = "UCYORK [8317001]")
 ```
