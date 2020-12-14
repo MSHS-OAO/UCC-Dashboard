@@ -5,6 +5,8 @@ library(anytime)
 library(lubridate)
 library(reshape2)
 library(plotly)
+library(knitr)
+library(kableExtra)
 
 #read in Master_Calc file
 data <- read.csv("J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv",
@@ -29,7 +31,7 @@ Site <- function(file = data,date){
   York <<- filter(file,Location=="UCYORK [8317001]")
 }
 
-#Function for Day of week Volume by site
+#Function for Day of week Encounters by site
 DOW_Volume <- function(df = data,Date = "1/1/2000"){
   df$Arrival <- as.Date(df$Arrival,format="%Y-%m-%d %H:%M:%S")
   timeframe <- as.numeric(max(df$Arrival,na.rm=T)-Date)/7
@@ -39,17 +41,17 @@ DOW_Volume <- function(df = data,Date = "1/1/2000"){
   Site(file = df, date=Date)
   DOW <- as.data.frame(matrix(0,nrow=10,ncol = 7))
   for(i in 1:length(Days)){
-    DOW[1,i] <- round(nrow(MS_Expresscare[MS_Expresscare$`Day of Week`== Days[i] & !(is.na(MS_Expresscare$Location)),])/timeframe,digits = 2)
-    DOW[2,i] <- round(nrow(Union_Square[Union_Square$`Day of Week`==Days[i] & !(is.na(Union_Square$Location)),])/timeframe,digits = 2)
-    DOW[3,i] <- round(nrow(Broadway[Broadway$`Day of Week`==Days[i] & !(is.na(Broadway$Location)),])/timeframe,digits = 2)
-    DOW[4,i] <- round(nrow(Cadman[Cadman$`Day of Week`==Days[i] & !(is.na(Cadman$Location)),])/timeframe,digits = 2)
-    DOW[5,i] <- round(nrow(Columbus[Columbus$`Day of Week`==Days[i] & !(is.na(Columbus$Location)),])/timeframe,digits = 2)
-    DOW[6,i] <- round(nrow(York[York$`Day of Week`==Days[i] & !(is.na(York$Location)),])/timeframe,digits = 2)
+    DOW[1,i] <- as.numeric(format(round(nrow(MS_Expresscare[MS_Expresscare$`Day of Week`== Days[i] & !(is.na(MS_Expresscare$Location)),])/timeframe,digits = 2),nsmall = 2))
+    DOW[2,i] <- as.numeric(format(round(nrow(Union_Square[Union_Square$`Day of Week`==Days[i] & !(is.na(Union_Square$Location)),])/timeframe,digits = 2),nsmall = 2))
+    DOW[3,i] <- as.numeric(format(round(nrow(Broadway[Broadway$`Day of Week`==Days[i] & !(is.na(Broadway$Location)),])/timeframe,digits = 2),nsmall = 2))
+    DOW[4,i] <- as.numeric(format(round(nrow(Cadman[Cadman$`Day of Week`==Days[i] & !(is.na(Cadman$Location)),])/timeframe,digits = 2),nsmall = 2))
+    DOW[5,i] <- as.numeric(format(round(nrow(Columbus[Columbus$`Day of Week`==Days[i] & !(is.na(Columbus$Location)),])/timeframe,digits = 2),nsmall = 2))
+    DOW[6,i] <- as.numeric(format(round(nrow(York[York$`Day of Week`==Days[i] & !(is.na(York$Location)),])/timeframe,digits = 2),nsmall = 2))
     
-    DOW[7,i] <- round(mean(DOW[1:6,i]),digits = 2)
-    DOW[8,i] <- round(median(DOW[1:6,i]),digits = 2)
-    DOW[9,i] <- round(max(DOW[1:6,i]),digits = 2)
-    DOW[10,i] <- round(min(DOW[1:6,i]),digits = 2)
+    DOW[7,i] <- as.numeric(format(round(mean(DOW[1:6,i]),digits = 2),nsmall = 2))
+    DOW[8,i] <- as.numeric(format(round(median(DOW[1:6,i]),digits = 2),nsmall = 2))
+    DOW[9,i] <- as.numeric(format(round(max(DOW[1:6,i]),digits = 2),nsmall = 2))
+    DOW[10,i] <- as.numeric(format(round(min(DOW[1:6,i]),digits = 2),nsmall = 2))
   }
   DOW <- cbind(c(Location, "Average","Median","Maximum","Minimum"),DOW)
   colnames(DOW) <- c("Location",Days)
@@ -59,23 +61,23 @@ DOW_Volume <- function(df = data,Date = "1/1/2000"){
 #Function for Time of day volume by site
 TOD_Volume <- function(df = data,Date = "1/1/2000"){
   df$Arrival <- as.Date(df$Arrival,format="%Y-%m-%d %H:%M:%S")
-  timeframe <- as.numeric(max(df$Arrival,na.rm=T)-Date)/7
+  timeframe <- as.numeric(max(df$Arrival,na.rm=T)-Date)
   #create location vector
   Location <- c("MS Express Care", "UC Union Square", "UC Broadway", "UC Cadman", "UC Columbus", "UC York")
   Site(file = df, date = Date)
   TOD <- as.data.frame(matrix(0,nrow=10,ncol = 24))
   for(i in 1:24){
-    TOD[1,i] <- round((nrow(MS_Expresscare[MS_Expresscare$`Hour of Day`==i-1 & !(is.na(MS_Expresscare$Location)) & !(is.na(MS_Expresscare$`Hour of Day`)),]))/timeframe,digits = 2)
-    TOD[2,i] <- round((nrow(Union_Square[Union_Square$`Hour of Day`==i-1 & !(is.na(Union_Square$Location)) & !(is.na(Union_Square$`Hour of Day`)),]))/timeframe,digits = 2)
-    TOD[3,i] <- round((nrow(Broadway[Broadway$`Hour of Day`==i-1 & !(is.na(Broadway$Location)) & !(is.na(Broadway$`Hour of Day`)),]))/timeframe,digits = 2)
-    TOD[4,i] <- round((nrow(Cadman[Cadman$`Hour of Day`==i-1 & !(is.na(Cadman$Location)) & !(is.na(Cadman$`Hour of Day`)),]))/timeframe,digits = 2)
-    TOD[5,i] <- round((nrow(Columbus[Columbus$`Hour of Day`==i-1 & !(is.na(Columbus$Location)) & !(is.na(Columbus$`Hour of Day`)),]))/timeframe,digits = 2)
-    TOD[6,i] <- round((nrow(York[York$`Hour of Day`==i-1 & !(is.na(York$Location)) & !(is.na(York$`Hour of Day`)),]))/timeframe,digits = 2)
+    TOD[1,i] <- as.numeric(format(round((nrow(MS_Expresscare[MS_Expresscare$`Hour of Day`==i-1 & !(is.na(MS_Expresscare$Location)) & !(is.na(MS_Expresscare$`Hour of Day`)),]))/timeframe,digits = 2),nsmall = 2))
+    TOD[2,i] <- as.numeric(format(round((nrow(Union_Square[Union_Square$`Hour of Day`==i-1 & !(is.na(Union_Square$Location)) & !(is.na(Union_Square$`Hour of Day`)),]))/timeframe,digits = 2),nsmall = 2))
+    TOD[3,i] <- as.numeric(format(round((nrow(Broadway[Broadway$`Hour of Day`==i-1 & !(is.na(Broadway$Location)) & !(is.na(Broadway$`Hour of Day`)),]))/timeframe,digits = 2),nsmall = 2))
+    TOD[4,i] <- as.numeric(format(round((nrow(Cadman[Cadman$`Hour of Day`==i-1 & !(is.na(Cadman$Location)) & !(is.na(Cadman$`Hour of Day`)),]))/timeframe,digits = 2),nsmall = 2))
+    TOD[5,i] <- as.numeric(format(round((nrow(Columbus[Columbus$`Hour of Day`==i-1 & !(is.na(Columbus$Location)) & !(is.na(Columbus$`Hour of Day`)),]))/timeframe,digits = 2),nsmall = 2))
+    TOD[6,i] <- as.numeric(format(round((nrow(York[York$`Hour of Day`==i-1 & !(is.na(York$Location)) & !(is.na(York$`Hour of Day`)),]))/timeframe,digits = 2),nsmall = 2))
     
-    TOD[7,i] <- round(mean(TOD[1:6,i]),digits = 2)
-    TOD[8,i] <- round(median(TOD[1:6,i]),digits = 2)
-    TOD[9,i] <- round(max(TOD[1:6,i]),digits = 2)
-    TOD[10,i] <- round(min(TOD[1:6,i]),digits = 2)
+    TOD[7,i] <- as.numeric(format(round(mean(TOD[1:6,i]),digits = 2),nsmall = 2))
+    TOD[8,i] <- as.numeric(format(round(median(TOD[1:6,i]),digits = 2),nsmall = 2))
+    TOD[9,i] <- as.numeric(format(round(max(TOD[1:6,i]),digits = 2),nsmall = 2))
+    TOD[10,i] <- as.numeric(format(round(min(TOD[1:6,i]),digits = 2),nsmall = 2))
   }
   TOD <- cbind(c(Location, "Average","Median","Maximum","Minimum"),TOD)
   colnames(TOD) <- c("Location",0:23)
@@ -205,7 +207,7 @@ MountSinai_pal <- function(palette = "main", reverse = FALSE, ...) {
 #The most recent week of data
 DOW_Weekly <- DOW_Volume(Date=max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-7)
 #Fiscal year to date
-DOW_FYTD <- DOW_Volume(Date = floor_date(Sys.Date(),"year"))
+DOW_FYTD <- DOW_Volume(Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 #Past 30 days
 DOW_30day <- DOW_Volume(Date=max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-30)
 
@@ -213,7 +215,7 @@ DOW_30day <- DOW_Volume(Date=max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"
 #The most recent week of data
 TOD_Weekly <- TOD_Volume(Date=max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-7)
 #Fiscal year to date
-TOD_FYTD <- TOD_Volume(Date = floor_date(Sys.Date(),"year"))
+TOD_FYTD <- TOD_Volume(Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 #Past 30 days
 TOD_30day <- TOD_Volume(Date=max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-30)
 
@@ -222,56 +224,29 @@ Compliance_tot <- compliance()
 #Compliance table for most recent week of data
 Compliance_Weekly <- compliance(Date = max(anytime(data$Arrival), na.rm = T)-604800)
 #Compliance table for FYTD
-Compliance_FYTD <- compliance(Date = floor_date(Sys.Date(),"year"))
+Compliance_FYTD <- compliance(Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 #Past 30 Days
 Compliance_30day <- compliance(Date=max(anytime(data$Arrival), na.rm = T)-2952000)
 
-###-----Graphs
-##System Graphs
-line_TOD <- function(TOD_table){
-  if(all(TOD_table == TOD_Weekly)){
-    timeframe = 7
-  } else if(all(TOD_table == TOD_30day)){
-    timeframe = 30
-  } else if(all(TOD_table == TOD_FYTD)){
-    timeframe = as.numeric(Sys.Date()-floor_date(Sys.Date(),"year"))
-  }
-  dfmelt <- TOD_table[c(1:7),] %>% pivot_longer(cols = 2:ncol(TOD_table),names_to = "Hour of Day",values_to = "Volume")%>%
-    mutate(Location = factor(Location, levels = c("MS Express Care","UC Union Square","UC Broadway","UC Cadman","UC Columbus","UC York","Average")),
-           Volume = as.numeric(Volume),
-           `Hour of Day` = as.numeric(`Hour of Day`))
-  two <- ggplot(data=dfmelt, aes(x=`Hour of Day`,y=Volume,group=Location,color=Location))+
-    geom_line(size=1.5)+
-    geom_point(size=2.75)+
-    scale_x_continuous(breaks=c(6:23), limits=c(6,23))+
-    ggtitle(paste0("Average Hourly Volume ","(Past ",timeframe," )"))+
-    xlab("Hour of Day")+
-    ylab("Volume")+
-    scale_color_manual(values=MountSinai_pal("main")(7))+
-    theme(plot.title=element_text(hjust=.5,size=20),
-          axis.title = element_text(face="bold"))
-  twoly <- ggplotly(two,tooltip=c("group","x","y")) %>%
-    config(displaylogo = F,
-           modeBarButtonsToRemove = c("lasso2d","autoScale2d","select2d","toggleSpikelines")) %>%
-    layout(title = list(xanchor = "center")) #turn graph into plotly interactive
-  return(twoly)
-}
+###-----Graphs & Tables
+##System Graphs & Tables
+#Volumes
 bar_DOW <- function(DOW_table){
   if(all(DOW_table == DOW_Weekly)){
-    timeframe = 7
+    timeframe = "(Past 7 Days)"
   } else if(all(DOW_table == DOW_30day)){
-    timeframe = 30
+    timeframe = "(Past 30 Days)"
   } else if(all(DOW_table == DOW_FYTD)){
-    timeframe = as.numeric(Sys.Date()-floor_date(Sys.Date(),"year"))
+    timeframe <- paste0("(",year(floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year")), " Avg.)")
   } 
-  data <- DOW_table[1:7,] %>% pivot_longer(cols = 2:ncol(DOW_table),names_to = "Day of Week", values_to = "Volume") %>%
+  data <- DOW_table[1:7,] %>% pivot_longer(cols = 2:ncol(DOW_table),names_to = "Day of Week", values_to = "Encounters") %>%
     mutate(Location = factor(Location, levels = c("MS Express Care","UC Union Square","UC Broadway","UC Cadman","UC Columbus","UC York","Average")),
            `Day of Week`=factor(`Day of Week`,levels = Days))
-  one <- ggplot(data=data, aes(fill=Location, x=`Day of Week`,y=Volume)) +
+  one <- ggplot(data=data, aes(fill=Location, x=`Day of Week`,y=Encounters)) +
     geom_bar(position="dodge", stat="identity", colour = "Black") +
-    ggtitle(paste0("Average Daily Volume"," (Past ",timeframe," days)"))+
+    ggtitle(paste0("Average Daily Encounters ",timeframe))+
     xlab("Day of Week")+
-    ylab("Volume")+
+    ylab("Encounters (Daily Avg.)")+
     scale_fill_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
@@ -281,6 +256,75 @@ bar_DOW <- function(DOW_table){
     layout(title = list(xanchor = "center")) #turn graph into plotly interactive
   return(onely)
 }
+bar_DOW_k <- function(DOW_table){
+  if(all(DOW_table == DOW_Weekly)){
+    timeframe = "(Past 7 Days)"
+  } else if(all(DOW_table == DOW_30day)){
+    timeframe = "(Past 30 Days)"
+  } else if(all(DOW_table == DOW_FYTD)){
+    timeframe <- paste0("(",year(floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year")), " Avg.)")
+  }
+  Ktable <- DOW_table
+  header <- ncol(Ktable)
+  names(header) <- paste0("Average Daily Encounters ",timeframe)
+  kable(Ktable) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), fixed_thead = T) %>%
+    row_spec(0, background = "#212070", color = "white") %>%
+    row_spec(1:nrow(Ktable), color = "black") %>%
+    row_spec(0:nrow(Ktable), align = "c", font_size = 11) %>%
+    column_spec(1,bold = T) %>%
+    add_header_above(header)
+}
+
+line_TOD <- function(TOD_table){
+  if(all(TOD_table == TOD_Weekly)){
+    timeframe = "(Past 7 Days)"
+  } else if(all(TOD_table == TOD_30day)){
+    timeframe = "(Past 30 Days)"
+  } else if(all(TOD_table == TOD_FYTD)){
+    timeframe <- paste0("(",year(floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year")), " Avg.)")
+  }
+  dfmelt <- TOD_table[c(1:7),] %>% pivot_longer(cols = 2:ncol(TOD_table),names_to = "Hour of Day",values_to = "Encounters")%>%
+    mutate(Location = factor(Location, levels = c("MS Express Care","UC Union Square","UC Broadway","UC Cadman","UC Columbus","UC York","Average")),
+           Encounters = as.numeric(Encounters),
+           `Hour of Day` = as.numeric(`Hour of Day`))
+  two <- ggplot(data=dfmelt, aes(x=`Hour of Day`,y=Encounters,group=Location,color=Location))+
+    geom_line(size=1.5)+
+    geom_point(size=2.75)+
+    scale_x_continuous(breaks=c(6:23), limits=c(6,23))+
+    ggtitle(paste0("Average Hourly Encounters ",timeframe))+
+    xlab("Hour of Day")+
+    ylab("Encounters (Hourly Avg.)")+
+    scale_color_manual(values=MountSinai_pal("main")(7))+
+    theme(plot.title=element_text(hjust=.5,size=20),
+          axis.title = element_text(face="bold"))
+  twoly <- ggplotly(two,tooltip=c("group","x","y")) %>%
+    config(displaylogo = F,
+           modeBarButtonsToRemove = c("lasso2d","autoScale2d","select2d","toggleSpikelines")) %>%
+    layout(title = list(xanchor = "center")) #turn graph into plotly interactive
+  return(twoly)
+}
+line_TOD_k <- function(TOD_table){
+  if(all(TOD_table == TOD_Weekly)){
+    timeframe = "(Past 7 Days)"
+  } else if(all(TOD_table == TOD_30day)){
+    timeframe = "(Past 30 Days)"
+  } else if(all(TOD_table == TOD_FYTD)){
+    timeframe <- paste0("(",year(floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year")), " Avg.)")
+  }
+  Ktable <- TOD_table[,c(1,8:25)]
+  header <- ncol(Ktable)
+  names(header) <- paste0("Average Hourly Encounters ",timeframe)
+  kable(Ktable) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), fixed_thead = T) %>%
+    row_spec(0, background = "#212070", color = "white") %>%
+    row_spec(1:nrow(Ktable), color = "black") %>%
+    row_spec(0:nrow(Ktable), align = "c", font_size = 11) %>%
+    column_spec(1,bold = T) %>%
+    add_header_above(header)
+}
+
+#Durations
 Arrival_Roomed <- function(Date = "1/1/2000"){
   df <- data %>% mutate(Arrival = as.Date(data$Arrival, format="%Y-%m-%d %H:%M:%S"),
                         Location = as.character(data$Location))
@@ -293,7 +337,7 @@ Arrival_Roomed <- function(Date = "1/1/2000"){
   Average <- Average %>%
     filter(Arrival >= Date,`Arrival to Roomed` > 0) %>% group_by(`Day of Week`) %>% summarize(Average = mean(`Arrival to Roomed`, na.rm = T), Median = median(`Arrival to Roomed`, na.rm = T), N = n()) %>%
     mutate(Location = "Average") %>% select(Location, `Day of Week`,Average,Median,N)
-  df <- bind_rows(df,Average) %>% mutate(Average = round(Average,digits = 2))
+  df <- bind_rows(df,Average) %>% mutate(Average = format(round(Average,digits = 2),nsmall = 2))
   df <- df %>% pivot_wider(id_cols = Location,names_from = `Day of Week`,values_from = Average)
   df[is.na(df)] <- 0
   df <- df %>% pivot_longer(cols = 2:ncol(df),names_to = "Day of Week",values_to = "Average")
@@ -318,16 +362,18 @@ Arrival_Roomed <- function(Date = "1/1/2000"){
 }
 
 ##Site Graphs
+#Volumes
 bar_DOW_site <- function(loc){
   df <- rbind(DOW_FYTD[DOW_FYTD$Location == loc,],DOW_30day[DOW_30day$Location == loc,],DOW_Weekly[DOW_Weekly$Location == loc,],DOW_30day[DOW_30day$Location == "Average",])
-  df <- mutate(df,Location = factor(c(paste0(year(Sys.Date())," Daily Avg."),"30 day Avg.","Past Week Avg.","System Daily Avg. (30 Day)"),levels = c(paste0(year(Sys.Date())," Daily Avg."),"30 day Avg.","Past Week Avg.","System Daily Avg. (30 Day)")))
-  dfmelt <- df %>% pivot_longer(cols = 2:8,names_to = "Day of Week",values_to = "Volume")
-  colnames(dfmelt) <- c("Timeframe","variable","value")
-  three <- ggplot(data = dfmelt,aes(fill=Timeframe, x=variable,y=value))+
+  df <- mutate(df,Location = factor(c(paste0(year(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T))," Daily Avg."),"30 day Avg.","Past Week Avg.","System Daily Avg. (30 Day)"),levels = c(paste0(year(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T))," Daily Avg."),"30 day Avg.","Past Week Avg.","System Daily Avg. (30 Day)")))
+  dfmelt <- df %>%pivot_longer(cols = 2:8,names_to = "Day of Week",values_to = "Encounters")
+  dfmelt <- dfmelt %>% mutate(`Day of Week` = factor(`Day of Week`,levels = Days))
+  colnames(dfmelt) <- c("Timeframe","Day of Week","Encounters")
+  three <- ggplot(data = dfmelt,aes(fill=Timeframe, x=`Day of Week`,y=Encounters))+
     geom_bar(position="dodge", stat="identity", colour = "Black") +
-    ggtitle(paste0(loc," Volume by Day of Week"))+
+    ggtitle(paste0(loc," Average Daily Encounters"))+
     xlab("Day of Week")+
-    ylab("Volume (Daily)")+
+    ylab("Encounters (Daily Avg.)")+
     scale_fill_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
@@ -337,39 +383,58 @@ bar_DOW_site <- function(loc){
     layout(title = list(xanchor = "center")) #turn graph into plotly interactive
   return(threely)
 }
+bar_DOW_site_k <- function(loc){
+  df <- rbind(DOW_FYTD[DOW_FYTD$Location == loc,],DOW_30day[DOW_30day$Location == loc,],DOW_Weekly[DOW_Weekly$Location == loc,],DOW_30day[DOW_30day$Location == "Average",])
+  df <- mutate(df,Location = factor(c(paste0(year(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T))," Daily Avg."),"30 day Avg.","Past Week Avg.","System Daily Avg. (30 Day)"),levels = c(paste0(year(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T))," Daily Avg."),"30 day Avg.","Past Week Avg.","System Daily Avg. (30 Day)")))
+  Ktable <- df
+  header <- ncol(Ktable)
+  names(header) <- paste0(loc," Average Daily Encounters")
+  kable(Ktable) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), fixed_thead = T) %>%
+    row_spec(0, background = "#212070", color = "white") %>%
+    row_spec(1:nrow(Ktable), color = "black") %>%
+    row_spec(0:nrow(Ktable), align = "c", font_size = 11) %>%
+    column_spec(1,bold = T) %>%
+    add_header_above(header)
+}
+
 box_DOW_site <- function(loc, Date = "1/1/2000"){
+  if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-7){
+    timeframe <- "(Past 7 Days)"
+  } else if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-30){
+    timeframe <- "(Past 30 Days)"
+  } else {
+    timeframe <- paste0("(",year(floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year")), " Avg.)")
+  }
   x <- Location[[loc]]
   df1 <- data %>% 
     mutate(Arrival = as.Date(Arrival,format = "%Y-%m-%d %H:%M:%S")) %>%
     filter(Arrival >= Date,
            Location == loc,
            !is.na(`Day of Week`))%>% 
-    mutate(Location = x)
+    mutate(Location = x) %>%
+    group_by(Location,Arrival,`Day of Week`) %>%
+    summarise(Encounters = n())
   #all data for entire system
   df2 <- data %>% 
     mutate(Arrival = as.Date(Arrival,format = "%Y-%m-%d %H:%M:%S")) %>%
     filter(Arrival >= Date,
-           !is.na(Location),
-           !is.na(`Day of Week`)) %>%
+           !is.na(`Day of Week`))%>%
+    group_by(Location,Arrival,`Day of Week`) %>%
+    summarise(Encounters = n()) %>%
+    ungroup() %>%
     mutate(Location = "System")
   #combine df1 and df2
-  data1 <- rbind(df1,df2)
+  data1 <- rbind(as.data.frame(df1),as.data.frame(df2))
   data2 <- data1 %>%
-    group_by(Location,Arrival,`Day of Week`) %>%
-    summarise(Volume = n()) %>%
     ungroup() %>%
-    select(Location,`Day of Week`,Volume) %>%
     mutate(Location = factor(Location,levels = c(x,"System")),
            `Day of Week` = factor(`Day of Week`,levels = Days))
-  data3 <- data2 %>% 
-    mutate(Volume =case_when(
-      Location == "System" ~ round(as.numeric(Volume/5L),digits=2),
-      TRUE ~ round(as.numeric(Volume),digits=2)))
-  four <- ggplot(data=data3, aes(x=`Day of Week`, y=Volume, fill=Location))+
+  four <- ggplot(data=data2, aes(x=`Day of Week`, y=Encounters, fill=Location))+
     geom_boxplot()+
-    ggtitle(paste0(x," Daily Encounters by Day of Week"))+
+    ggtitle(paste0("Average Daily Encounters ",timeframe))+
     xlab("Day of Week")+
-    ylab("Volume (Encounters)")+
+    ylab("Encounters (Daily Avg.)")+
     scale_fill_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
@@ -380,6 +445,13 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
   return(fourly)
 }
 line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
+  if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-7){
+    timeframe <- "(Past 7 Days)"
+  } else if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-30){
+    timeframe <- "(Past 30 Days)"
+  } else {
+    timeframe <- paste0("(",year(floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year")), " Avg.)")
+  }
   data$Arrival <- anytime(data$Arrival)
   #filter master data by location and date
   df1 <- data[data$Location == loc & data$Arrival > anytime(Date),]
@@ -388,25 +460,31 @@ line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
   #Create data frame counting number of encounters for each DOW at each Hour of day
   TOD_DOW <- as.data.frame(matrix(0,nrow=7,ncol=25))
   colnames(TOD_DOW) <- c("Day of Week",0:23)
+  days <- as.numeric(round(difftime(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T),min(df1$Arrival),units = "days"),digits = 0))/7
   TOD_DOW[,1] <- Days
   for(i in 2:25){
     for(j in 1:7){
-      days <- as.numeric(round(difftime(Sys.Date(),min(df1$Arrival),units = "days"),digits = 0))/7
       TOD_DOW[j,i] <- nrow(df1[df1$`Hour of Day` == i-2 & df1$`Day of Week` == Days[j],])/days
     }
   }
   TOD_melt <- melt(data = TOD_DOW, id.vars = "Day of Week")
   TOD_melt$variable <- as.numeric(TOD_melt$variable)
   TOD_melt$`Day of Week` <- factor(TOD_melt$`Day of Week`, levels = c(Days))
-  five <- ggplot(data=TOD_melt, aes(x=variable,y=value,group=`Day of Week`,color=`Day of Week`))+
+  colnames(TOD_melt) <- c("Day of Week","Hour of Day","Encounters")
+  TOD_melt <- mutate(TOD_melt, Encounters = format(round(Encounters,digits = 2),nsmall = 2))
+  five <- ggplot(data=TOD_melt, aes(x=`Hour of Day`,y=`Encounters`,group=`Day of Week`,color=`Day of Week`))+
     geom_line(size=1.5)+
-    geom_point(size=2.75, colour = "black")+
+    geom_point(size=2.75)+
     scale_x_continuous(breaks=c(6:23), limits=c(6,23))+
-    ggtitle(paste(Location[loc],"Volume by Hour of day"))+
+    ggtitle(paste(Location[loc],"Average Hourly Encounters",timeframe))+
     xlab("Hour of Day")+
-    ylab("Volume")+
+    ylab("Encounters (Hourly Avg.)")+
     scale_color_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
-  return(five)
+  fively <- ggplotly(five,tooltip=c("group","x","y")) %>%
+    config(displaylogo = F,
+           modeBarButtonsToRemove = c("lasso2d","autoScale2d","select2d","toggleSpikelines")) %>%
+    layout(title = list(xanchor = "center")) #turn graph into plotly interactive
+  return(fively)
 }
