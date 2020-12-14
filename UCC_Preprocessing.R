@@ -3,15 +3,14 @@
 ##Read in most recent file
 #---File Selection---
 library(anytime)
+library(dplyr)
 #Read in most recent MS Expresscare file
 df <- file.info(list.files("J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/MS Expresscare", full.names = T))
 Express <- read.csv(rownames(df)[which.max(df$mtime)], header = T)
-Express_min <- min(anytime(Express$Arrival.Date))
 
 #Read in the most recent UCC (all UCC's exceot MS Expresscare) file
 df2 <- file.info(list.files("J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Urgent Cares", full.names = T))
 UCC <- read.csv(rownames(df2)[which.max(df2$mtime)], header = T)
-UCC_min <- min(anytime(UCC$Date))
 
 #Read in Master raw files
 Master_Express <- read.csv("J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Express.csv")
@@ -20,6 +19,16 @@ Master_UCC <- read.csv("J:/deans/Presidents/HSPI-PM/Operations Analytics and Opt
 Master_UCC_max <- max(anytime(Master_UCC$Date))
 Master_Calc <- read.csv("J:/deans/Presidents/HSPI-PM/Operations Analytics and Optimization/Projects/Service Lines/MSHS UCC/Data/Master/Master_Calc.csv")
 colnames(Master_Calc) <- c("Location","Arrival", "Roomed", "Discharge","Disposition", "Hour of Day", "Arrival to Roomed", "Roomed to Discharge", "Arrival to Discharge", "Day of Week", "Year")
+
+#filter overlapping dates between raw files and masters
+Express <- Express %>% 
+  filter(as.Date(Arrival.Date,format = "%m/%d/%Y") > as.Date(Master_Express_max,format = "%m/%d/%Y"))
+UCC <- UCC %>%
+  filter(as.Date(Date,format = "%m/%d/%Y") > as.Date(Master_UCC_max,format = "%m/%d/%Y"))
+
+#Check min dates in raw files
+Express_min <- min(anytime(Express$Arrival.Date))
+UCC_min <- min(anytime(UCC$Date))
 
 #QC to make sure new UCC and Express files contain dates after the most recent master file dates
 if(Express_min < Master_Express_max || UCC_min < Master_UCC_max){
