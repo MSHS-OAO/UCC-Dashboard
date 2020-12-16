@@ -50,6 +50,7 @@ bar_DOW_site(loc = "UC Union Square")
 bar_DOW_site_k(loc = "UC Union Square")
 #complete
 box_DOW_site(loc = "UC10UNION [41028001]",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
+box_DOW_site_k(loc = "UC10UNION [41028001]",Date = floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 #complete
 line_DOW_TOD_site(loc = "UC10UNION [41028001]",Date=floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year"))
 ```
