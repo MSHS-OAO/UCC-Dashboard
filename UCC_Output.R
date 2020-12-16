@@ -398,7 +398,53 @@ bar_DOW_site_k <- function(loc){
     add_header_above(header)
 }
 
-box_DOW_site <- function(loc, Date = "1/1/2000"){
+box_DOW_site <- function(loc, Date){
+  if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-7){
+    timeframe <- "(Past 7 Days)"
+  } else if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-30){
+    timeframe <- "(Past 30 Days)"
+  } else {
+    timeframe <- paste0("(",year(floor_date(max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"), na.rm = T),"year")), " Avg.)")
+  }
+  x <- Location[[loc]]
+  df1 <- data %>% 
+    mutate(Arrival = as.Date(Arrival,format = "%Y-%m-%d %H:%M:%S")) %>%
+    filter(Arrival >= Date,
+           Location == loc,
+           !is.na(`Day of Week`))%>% 
+    mutate(Location = x) %>%
+    group_by(Location,Arrival,`Day of Week`) %>%
+    summarise(Encounters = n())
+  #all data for entire system
+  df2 <- data %>% 
+    mutate(Arrival = as.Date(Arrival,format = "%Y-%m-%d %H:%M:%S")) %>%
+    filter(Arrival >= Date,
+           !is.na(`Day of Week`))%>%
+    group_by(Location,Arrival,`Day of Week`) %>%
+    summarise(Encounters = n()) %>%
+    ungroup() %>%
+    mutate(Location = "System")
+  #combine df1 and df2
+  data1 <- rbind(as.data.frame(df1),as.data.frame(df2))
+  data2 <- data1 %>%
+    ungroup() %>%
+    mutate(Location = factor(Location,levels = c(x,"System")),
+           `Day of Week` = factor(`Day of Week`,levels = Days))
+  four <- ggplot(data=data2, aes(x=`Day of Week`, y=Encounters, fill=Location))+
+    geom_boxplot()+
+    ggtitle(paste0(Location[loc]," Average Daily Encounters ",timeframe))+
+    xlab("Day of Week")+
+    ylab("Encounters (Daily Avg.)")+
+    scale_fill_manual(values=MountSinai_pal("main")(7))+
+    theme(plot.title=element_text(hjust=.5,size=20),
+          axis.title = element_text(face="bold"))
+  fourly <- ggplotly(four) %>%
+    config(displaylogo = F,modeBarButtonsToRemove = c("lasso2d","autoScale2d","select2d","toggleSpikelines")) %>%
+    layout(title = list(xanchor = "center"),
+           boxmode = "group") #turn graph into plotly interactive
+  return(fourly)
+}
+box_DOW_site_k <- function(loc, Date){
   if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-7){
     timeframe <- "(Past 7 Days)"
   } else if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-30){
@@ -438,12 +484,34 @@ box_DOW_site <- function(loc, Date = "1/1/2000"){
     scale_fill_manual(values=MountSinai_pal("main")(7))+
     theme(plot.title=element_text(hjust=.5,size=20),
           axis.title = element_text(face="bold"))
-  fourly <- ggplotly(four) %>%
-    config(displaylogo = F,modeBarButtonsToRemove = c("lasso2d","autoScale2d","select2d","toggleSpikelines")) %>%
-    layout(title = list(xanchor = "center"),
-           boxmode = "group") #turn graph into plotly interactive
-  return(fourly)
+  stats <- ggplot_build(four)$data[[1]][,c(4,13,14,3,5)]
+  colnames(stats) <- c("Median","Min","Max","Q1","Q3")
+  location <- unique(data2$Location)
+  days <- c(Days[1],Days[1],Days[2],Days[2],Days[3],Days[3],Days[4],Days[4],Days[5],Days[5],Days[6],Days[6],Days[7],Days[7])
+  df <- cbind(days,Location = rep(location,7),stats) 
+  df <- df %>% pivot_longer(cols = 3:ncol(df),values_to = "values",names_to = "Statistics") 
+  df <- df %>% pivot_wider(id_cols = c(Statistics,Location),names_from = days,values_from = values) 
+  df$Statistics <- factor(df$Statistics,levels = colnames(stats))
+  df <- df %>% arrange(Statistics)
+  df <- as.data.frame(df)
+  for(i in 3:ncol(df)){
+    for(j in 1:nrow(df)){
+      df[j,i] <- format(round(as.numeric(df[j,i]),digits = 2),nsmall = 2)
+    }
+  }
+  Ktable <- df
+  header <- ncol(Ktable)
+  names(header) <- paste0(Location[loc]," Average Daily Encounters ",timeframe)
+  kable(Ktable) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), fixed_thead = T) %>%
+    row_spec(0, background = "#212070", color = "white") %>%
+    row_spec(1:nrow(Ktable), color = "black") %>%
+    row_spec(0:nrow(Ktable), align = "c", font_size = 11) %>%
+    column_spec(1,bold = T) %>%
+    collapse_rows(columns = 1, valign = "middle") %>%
+    add_header_above(header)
 }
+
 line_DOW_TOD_site <- function(loc, Date = "1/1/2000"){
   if(Date == max(as.Date(data$Arrival,format="%Y-%m-%d %H:%M:%S"),na.rm = T)-7){
     timeframe <- "(Past 7 Days)"
